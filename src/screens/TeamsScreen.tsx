@@ -1,24 +1,48 @@
-import { Image, FlatList, SafeAreaView, StyleSheet, Text, View } from 'react-native'
+import { ActivityIndicator, SegmentedButtons } from 'react-native-paper'
+import { FlatList, Image, SafeAreaView, StyleSheet, Text, View } from 'react-native'
+import React, { useState } from 'react'
 import { Team, useTeams } from '../hooks/useTeams'
 
-import React from 'react'
 import TeamCard from '../components/TeamCard'
 
 export default function TeamsScreen() {
   const { data, isError, isLoading } = useTeams()
+  const [dataFiltered, setDataFiltered] = useState<Team[] | null>()
+  const [value, setValue] = React.useState('')
+
+  const conferences = [
+    {
+      label: 'East',
+      value: 'East',
+    },
+    {
+      label: 'West',
+      value: 'West',
+    },
+  ]
+
+  const handleChangeConference = (val: string) => {
+    setValue(val)
+    const teamsFiltered = data?.filter((team) => team.conference === val)
+    setDataFiltered(teamsFiltered)
+  }
 
   if (isLoading) {
     return (
-      <>
-        <Text style={styles.title}>Loading...</Text>
-      </>
+      <View style={styles.containerCenter}>
+        <ActivityIndicator size="large" />
+        <Text style={styles.loading}>Chargement des équipes</Text>
+      </View>
     )
   }
 
   if (isError) {
     return (
       <>
-        <Image source={{uri: "https://media.giphy.com/media/muUi39vx8gj2o/giphy.gif"}} style={{width: "100%", height: 580}}/>
+        <Image
+          source={{ uri: 'https://media.giphy.com/media/muUi39vx8gj2o/giphy.gif' }}
+          style={{ width: '100%', height: 580 }}
+        />
         <Text style={styles.error}>We encoutered an error </Text>
       </>
     )
@@ -27,8 +51,22 @@ export default function TeamsScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Choose your NBA team</Text>
+      <SegmentedButtons
+        value={value}
+        onValueChange={handleChangeConference}
+        buttons={[
+          {
+            value: 'East',
+            label: 'East',
+          },
+          {
+            value: 'West',
+            label: 'West',
+          },
+        ]}
+      />
       <FlatList
-        data={data}
+        data={dataFiltered || data}
         renderItem={({ item }) => (
           <TeamCard key={item.id} name={item.name} conference={item.conference} />
         )}
@@ -50,9 +88,20 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: 'bold',
     textAlign: 'center',
+    marginVertical: 20,
   },
   flatList: {
-    marginHorizontal: 4,
+    marginHorizontal: 10,
+  },
+  containerCenter: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+  },
+  loading: {
+    color: 'blue',
+    fontSize: 24,
+    textAlign: 'center',
   },
   error: {
     color: 'red',
