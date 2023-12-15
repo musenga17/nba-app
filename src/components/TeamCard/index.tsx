@@ -2,6 +2,7 @@ import { Card, Text } from 'react-native-paper'
 
 import React from 'react'
 import { StyleSheet } from 'react-native'
+import { useImage } from '../../hooks/useImage'
 
 interface Props {
   name: string
@@ -9,6 +10,8 @@ interface Props {
 }
 
 const TeamCard = ({ name, conference }: Props) => {
+  const source = useImage(name)
+
   return (
     <Card style={styles.card}>
       <Card.Title
@@ -17,7 +20,7 @@ const TeamCard = ({ name, conference }: Props) => {
         title={name}
         subtitle={conference}
       />
-      <Card.Cover source={{ uri: 'https://picsum.photos/700' }} />
+      <Card.Cover source={source} resizeMode="contain" />
     </Card>
   )
 }

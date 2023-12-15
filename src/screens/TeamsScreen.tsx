@@ -1,4 +1,4 @@
-import { FlatList, SafeAreaView, StyleSheet, Text, View } from 'react-native'
+import { Image, FlatList, SafeAreaView, StyleSheet, Text, View } from 'react-native'
 import { Team, useTeams } from '../hooks/useTeams'
 
 import React from 'react'
@@ -7,11 +7,23 @@ import TeamCard from '../components/TeamCard'
 export default function TeamsScreen() {
   const { data, isError, isLoading } = useTeams()
 
-  if (isError) {
-    return <Text></Text>
+  if (isLoading) {
+    return (
+      <>
+        <Text style={styles.title}>Loading...</Text>
+      </>
+    )
   }
 
-  console.log('🚀 ~ file: TeamsScreen.tsx:9 ~ TeamsScreen ~ data:', data)
+  if (isError) {
+    return (
+      <>
+        <Image source={{uri: "https://media.giphy.com/media/muUi39vx8gj2o/giphy.gif"}} style={{width: "100%", height: 580}}/>
+        <Text style={styles.error}>We encoutered an error </Text>
+      </>
+    )
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Choose your NBA team</Text>
@@ -44,5 +56,7 @@ const styles = StyleSheet.create({
   },
   error: {
     color: 'red',
+    fontSize: 24,
+    textAlign: 'center',
   },
 })
